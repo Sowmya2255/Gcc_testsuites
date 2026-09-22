@@ -1,0 +1,31 @@
+set status [remote_exec host  "echo i am learning gcc testsuite"]
+set out [lindex $status 1]
+
+if { [regexp {learning} $out] } {
+   pass "sample: output contains 'learning'"
+} else {
+    fail "sample: output contains 'learning'"
+}
+
+
+# test to fail case
+set status [remote_exec host "echo i am learning gcc testsuite failcase"]
+set out [lindex $status 1]
+
+if { [regexp {how} $out] } {
+   pass "sample: output contains 'how'"
+} else {
+   fail "sample: output contains 'how'"
+}
+
+#tetscase to XFAIL
+
+setup_xfail "*-*-*"
+set status [remote_exec host "echo i am learning gcc testsuite xfail condition"]
+set out [lindex $status 1]
+
+if { [regexp {python} $out] } {
+   pass "sample: output contains 'python'"
+} else {
+   fail "sample: output contains 'python'"
+}
