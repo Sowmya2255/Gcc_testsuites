@@ -1,0 +1,44 @@
+Test run by hkumarmd on Tue Sep 22 08:48:36 2026
+Native configuration is x86_64-pc-linux-gnu
+
+		=== gcc tests ===
+
+Schedule of variations:
+    unix
+
+Running target unix
+Using /folk/hkumarmd/local/share/dejagnu/baseboards/unix.exp as board description file for target.
+Using /folk/hkumarmd/local/share/dejagnu/config/unix.exp as generic interface file for target.
+Using /ala-lpggp31/hkumarmd/sowmya/gcc_test/gcc/gcc/testsuite/config/default.exp as tool-and-target-specific interface file.
+Running /ala-lpggp31/hkumarmd/sowmya/gcc_test/gcc/gcc/testsuite/gcc.misc-tests/sample.exp ...
+Executing on host: echo i am learning gcc testsuite    (timeout = 300)
+spawn -ignore SIGHUP echo i am learning gcc testsuite
+i am learning gcc testsuite
+PASS: sample: output contains 'learning'
+Executing on host: echo i am learning gcc testsuite failcase    (timeout = 300)
+spawn -ignore SIGHUP echo i am learning gcc testsuite failcase
+i am learning gcc testsuite failcase
+FAIL: sample: output contains 'how'
+Executing on host: echo i am learning gcc testsuite xfail condition    (timeout = 300)
+spawn -ignore SIGHUP echo i am learning gcc testsuite xfail condition
+i am learning gcc testsuite xfail condition
+XFAIL: sample: output contains 'python'
+testcase /ala-lpggp31/hkumarmd/sowmya/gcc_test/gcc/gcc/testsuite/gcc.misc-tests/sample.exp completed in 0 seconds
+
+		=== gcc Summary ===
+
+# of expected passes		1
+# of unexpected failures	1
+# of expected failures		1
+Executing on host: /ala-lpggp31/hkumarmd/sowmya/gcc_test/gcc/build/gcc/xgcc -v    (timeout = 300)
+spawn -ignore SIGHUP /ala-lpggp31/hkumarmd/sowmya/gcc_test/gcc/build/gcc/xgcc -v
+Using built-in specs.
+COLLECT_GCC=/ala-lpggp31/hkumarmd/sowmya/gcc_test/gcc/build/gcc/xgcc
+Target: x86_64-pc-linux-gnu
+Configured with: ../configure
+Thread model: posix
+Supported LTO compression algorithms: zlib
+gcc version 17.0.0 20260916 (experimental) (GCC) 
+/ala-lpggp31/hkumarmd/sowmya/gcc_test/gcc/build/gcc/xgcc  version 17.0.0 20260916 (experimental) (GCC) 
+
+runtest completed at Tue Sep 22 08:48:36 2026

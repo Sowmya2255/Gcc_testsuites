@@ -1,0 +1,21 @@
+Test run by hkumarmd on Tue Sep 22 08:48:36 2026
+Native configuration is x86_64-pc-linux-gnu
+
+		=== gcc tests ===
+
+Schedule of variations:
+    unix
+
+Running target unix
+Running /ala-lpggp31/hkumarmd/sowmya/gcc_test/gcc/gcc/testsuite/gcc.misc-tests/sample.exp ...
+PASS: sample: output contains 'learning'
+FAIL: sample: output contains 'how'
+XFAIL: sample: output contains 'python'
+
+		=== gcc Summary ===
+
+# of expected passes		1
+# of unexpected failures	1
+# of expected failures		1
+/ala-lpggp31/hkumarmd/sowmya/gcc_test/gcc/build/gcc/xgcc  version 17.0.0 20260916 (experimental) (GCC) 
+
