@@ -1,0 +1,51 @@
+# seefiles.exp - like compilecheck but does NOT delete its files,
+# so you can SEE where they are created on disk.
+# After running, look in:  build/gcc/testsuite/gcc/
+# for seefiles.c and seefiles.o
+# (Remember to delete them yourself afterwards.)
+
+load_lib gcc-defs.exp
+load_lib target-supports.exp
+
+if { [is_remote host] } {
+    return
+}
+if { ![gcc_parallel_test_run_p seefiles] } {
+    return
+}
+gcc_parallel_test_enable 0
+
+global GCC_UNDER_TEST
+if { ![info exists GCC_UNDER_TEST] } {
+    set GCC_UNDER_TEST [find_gcc]
+}
+
+set work_dir [pwd]
+
+# Print the working directory into the log so you can see it.
+verbose -log "seefiles: work_dir is $work_dir"
+
+set src [file join $work_dir "seefiles.c"]
+set obj [file join $work_dir "seefiles.o"]
+
+verbose -log "seefiles: source path is $src"
+verbose -log "seefiles: object path is $obj"
+
+set f [open $src w]
+puts $f "int main (void) { return 0; }"
+close $f
+
+set cmd "$GCC_UNDER_TEST -c $src -o $obj"
+verbose -log "seefiles: command is $cmd"
+set status [remote_exec host $cmd]
+set rc [lindex $status 0]
+if { $rc == 0 } {
+    pass "seefiles: compiled, files left on disk for inspection"
+} else {
+    fail "seefiles: compiled, files left on disk for inspection"
+}
+
+# NOTE: we intentionally do NOT delete seefiles.c / seefiles.o here,
+# so you can find them on disk after the run.
+
+gcc_parallel_test_enable 1

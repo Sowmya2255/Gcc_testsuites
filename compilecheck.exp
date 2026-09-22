@@ -1,0 +1,103 @@
+# compilecheck.exp - beginner practice: actually run the compiler.
+# This bridges simple.exp (result types) and pr111527.exp (running gcc).
+# It writes a tiny C file, compiles it, and PASS/FAILs on the result.
+# NOT a real GCC test - for learning only.
+#
+# Run from build/gcc with:
+#   make check-gcc RUNTESTFLAGS="compilecheck.exp"
+
+load_lib gcc-defs.exp
+load_lib target-supports.exp
+
+# Only run locally (we create files in the current directory).
+if { [is_remote host] } {
+    return
+}
+
+# Let only one parallel worker run this self-contained test.
+if { ![gcc_parallel_test_run_p compilecheck] } {
+    return
+}
+gcc_parallel_test_enable 0
+
+# Find the compiler we are testing.
+global GCC_UNDER_TEST
+if { ![info exists GCC_UNDER_TEST] } {
+    set GCC_UNDER_TEST [find_gcc]
+}
+
+set work_dir [pwd]
+
+# ---------------------------------------------------------------
+# Test A: a GOOD program should compile -> expect PASS.
+# ---------------------------------------------------------------
+set good [file join $work_dir "cc_good.c"]
+set good_obj [file join $work_dir "cc_good.o"]
+
+set f [open $good w]
+puts $f "int main (void) { return 0; }"
+close $f
+
+set cmd "$GCC_UNDER_TEST -c $good -o $good_obj"
+verbose -log "Test A command: $cmd"
+set status [remote_exec host $cmd]
+set rc [lindex $status 0]
+set out [lindex $status 1]
+if { $rc == 0 } {
+    pass "compilecheck: valid program compiles"
+} else {
+    fail "compilecheck: valid program compiles"
+    verbose -log "compiler output: $out"
+}
+file delete -force $good_obj
+file delete -force $good
+
+# ---------------------------------------------------------------
+# Test B: a BROKEN program should NOT compile.
+# Here "success" for the test means the compile FAILED (rc != 0).
+# So we pass when the compiler correctly rejects bad code.
+# ---------------------------------------------------------------
+set bad [file join $work_dir "cc_bad.c"]
+set bad_obj [file join $work_dir "cc_bad.o"]
+
+set f [open $bad w]
+puts $f "int main (void) { return }"
+close $f
+
+set cmd "$GCC_UNDER_TEST -c $bad -o $bad_obj"
+verbose -log "Test B command: $cmd"
+set status [remote_exec host $cmd]
+set rc [lindex $status 0]
+set out [lindex $status 1]
+if { $rc != 0 } {
+    pass "compilecheck: invalid program is rejected"
+} else {
+    fail "compilecheck: invalid program is rejected"
+    verbose -log "compiler output: $out"
+}
+file delete -force $bad_obj
+file delete -force $bad
+
+# ---------------------------------------------------------------
+# Test C: check the compiler OUTPUT text, not just exit code.
+# We compile the broken program and confirm the error message
+# actually mentions the problem (an "expected" diagnostic).
+# ---------------------------------------------------------------
+set bad2 [file join $work_dir "cc_bad2.c"]
+set f [open $bad2 w]
+puts $f "int main (void) { return }"
+close $f
+
+set cmd "$GCC_UNDER_TEST -c $bad2 -o /dev/null"
+verbose -log "Test C command: $cmd"
+set status [remote_exec host $cmd]
+set out [lindex $status 1]
+if { [regexp {expected} $out] } {
+    pass "compilecheck: error message mentions 'expected'"
+} else {
+    fail "compilecheck: error message mentions 'expected'"
+    verbose -log "compiler output: $out"
+}
+file delete -force $bad2
+
+gcc_parallel_test_enable 1

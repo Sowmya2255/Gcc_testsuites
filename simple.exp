@@ -1,0 +1,75 @@
+# simple.exp - a beginner practice test.
+# Demonstrates the three result types: PASS, FAIL, XFAIL.
+# This is NOT a real GCC test - it is only for learning DejaGnu.
+#
+# Run from build/gcc with:
+#   make check-gcc RUNTESTFLAGS="simple.exp"
+# Then read results in:
+#   testsuite/gcc/gcc.sum   (short: one line per test)
+#   testsuite/gcc/gcc.log   (full detail)
+
+# ---------------------------------------------------------------
+# Test 1: a PASS.
+# We check something that is always true, so we call pass.
+# ---------------------------------------------------------------
+set a 2
+set b 2
+if { $a == $b } {
+    pass "simple: 2 equals 2 (this should PASS)"
+} else {
+    fail "simple: 2 equals 2 (this should PASS)"
+}
+
+# ---------------------------------------------------------------
+# Test 2: a FAIL.
+# We check something that is false, so the else branch runs
+# and we call fail. This will show as an unexpected failure.
+# ---------------------------------------------------------------
+set x 1
+set y 2
+if { $x == $y } {
+    pass "simple: 1 equals 2 (this should FAIL)"
+} else {
+    fail "simple: 1 equals 2 (this should FAIL)"
+}
+
+# ---------------------------------------------------------------
+# Test 3: an XFAIL (expected failure).
+# First we mark the NEXT test as an expected failure with
+# setup_xfail. The "*" means "on all targets".
+# Then we run a check that fails. Because we told DejaGnu we
+# expected it to fail, it reports XFAIL instead of FAIL.
+# ---------------------------------------------------------------
+setup_xfail "*-*-*"
+set p 5
+set q 6
+if { $p == $q } {
+    pass "simple: 5 equals 6 (marked as expected failure -> XFAIL)"
+} else {
+    fail "simple: 5 equals 6 (marked as expected failure -> XFAIL)"
+}
+
+# ---------------------------------------------------------------
+# Test 4: an XPASS (unexpected pass).
+# We again mark the next test as an expected failure, but this
+# time the check actually PASSES. Because we told DejaGnu we
+# expected a failure, a pass here is "unexpected" -> XPASS.
+# ---------------------------------------------------------------
+setup_xfail "*-*-*"
+set m 7
+set n 7
+if { $m == $n } {
+    pass "simple: 7 equals 7 (marked xfail but passes -> XPASS)"
+} else {
+    fail "simple: 7 equals 7 (marked xfail but passes -> XPASS)"
+}
+
+# ---------------------------------------------------------------
+# Test 5: UNSUPPORTED and UNTESTED.
+# These are not pass/fail. They record that a test could not run.
+#   unsupported = the feature/target is not available here
+#   untested    = we chose not to actually run the check
+# You call them directly (no if needed) for this demo.
+# ---------------------------------------------------------------
+unsupported "simple: pretend this feature is not available here"
+untested "simple: pretend we skipped actually running this check"
